@@ -42,7 +42,7 @@ See [docs/exercises.md](docs/exercises.md) for complete examples.
 - Call `subprocess.run(["pip", "install", ...])` in code
 
 ✅ **DO:**
-- Use `anymap-ts[all]` from `pyproject.toml` for mapping
+- Use `anymap-ts` from `pyproject.toml` for mapping
 - Split simulations into independent agent notebooks
 - Load config with `simulated_city.config.load_config()`
 - Use `mqtt.publish_json_checked()` for verified publishing

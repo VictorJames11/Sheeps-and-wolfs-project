@@ -252,7 +252,7 @@ RULES from .github/copilot-instructions.md:
 - Call subprocess.run(["pip", "install", ...])
 
 ✅ DO:
-- Use anymap-ts[all] from pyproject.toml for mapping
+- Use anymap-ts from pyproject.toml for mapping
 - Split simulations into agent notebooks (each publishes/subscribes via MQTT)
 - Load config via: simulated_city.config.load_config()
 - Use: mqtt.publish_json_checked(client, topic, data)

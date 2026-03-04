@@ -25,7 +25,7 @@ macOS / Linux:
 ```bash
 source .venv/bin/activate
 python -m pip install -U pip
-python -m pip install -e ".[dev, geo, notebooks]"
+python -m pip install -e ".[dev,notebooks]"
 ```
 
 Windows (PowerShell):
@@ -33,7 +33,7 @@ Windows (PowerShell):
 ```powershell
 .\.venv\Scripts\Activate.ps1
 python -m pip install -U pip
-python -m pip install -e ".[dev, geo, notebooks]"
+python -m pip install -e ".[dev,notebooks]"
 ```
 
 ### when returning to the project
