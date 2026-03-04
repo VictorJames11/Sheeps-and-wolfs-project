@@ -38,7 +38,7 @@ class SimulationLocationConfig:
 
 @dataclass(frozen=True, slots=True)
 class SimulationConfig:
-    """Configuration for the rubbish-bin simulation.
+    """Configuration for workshop simulations.
 
     Notes
     - This section is optional; the template can be used without any simulation.
@@ -46,6 +46,39 @@ class SimulationConfig:
       simple value object.
     """
 
+    # Sheep-wolf baseline parameters (Phase 2)
+    grid_width: int = 10
+    grid_height: int = 10
+    tick_interval_s: float = 0.5
+    seed: int | None = None
+
+    initial_sheep: int = 30
+    initial_wolves: int = 8
+    initial_grass_coverage_pct: int = 70
+
+    sheep_initial_energy: int = 8
+    sheep_move_cost: int = 1
+    sheep_eat_gain: int = 4
+    sheep_reproduction_threshold: int = 10
+    sheep_reproduction_probability: float = 0.08
+
+    wolf_initial_energy: int = 12
+    wolf_move_cost: int = 1
+    wolf_eat_gain: int = 8
+    wolf_reproduction_threshold: int = 14
+    wolf_reproduction_probability: float = 0.04
+    wolf_predation_capacity: int = 1
+
+    grass_regrow_ticks: int = 5
+
+    min_sheep_threshold: int = 12
+    max_wolf_threshold: int = 25
+    low_grass_threshold_pct: int = 25
+
+    max_ticks: int = 1000
+    extinction_grace_ticks: int = 20
+
+    # Legacy rubbish-bin parameters (kept for backward compatibility)
     timestep_minutes: int = 15
     arrival_prob: float = 0.25
     bag_fill_delta_pct: int = 2
@@ -57,7 +90,6 @@ class SimulationConfig:
     # Optional: fixed simulation start timestamp (UTC) for deterministic logs.
     # If None, the simulator uses the current wall-clock time.
     start_time: datetime | None = None
-    seed: int | None = None
     locations: tuple[SimulationLocationConfig, ...] = ()
 
 
@@ -288,6 +320,36 @@ def _parse_simulation_config(raw: Any) -> SimulationConfig | None:
     if not isinstance(raw, dict):
         raise ValueError("Config key 'simulation' must be a mapping")
 
+    grid_width = int(raw.get("grid_width") or 10)
+    grid_height = int(raw.get("grid_height") or 10)
+    tick_interval_s = float(raw.get("tick_interval_s") or 0.5)
+
+    initial_sheep = int(raw.get("initial_sheep") or 30)
+    initial_wolves = int(raw.get("initial_wolves") or 8)
+    initial_grass_coverage_pct = int(raw.get("initial_grass_coverage_pct") or 70)
+
+    sheep_initial_energy = int(raw.get("sheep_initial_energy") or 8)
+    sheep_move_cost = int(raw.get("sheep_move_cost") or 1)
+    sheep_eat_gain = int(raw.get("sheep_eat_gain") or 4)
+    sheep_reproduction_threshold = int(raw.get("sheep_reproduction_threshold") or 10)
+    sheep_reproduction_probability = float(raw.get("sheep_reproduction_probability") or 0.08)
+
+    wolf_initial_energy = int(raw.get("wolf_initial_energy") or 12)
+    wolf_move_cost = int(raw.get("wolf_move_cost") or 1)
+    wolf_eat_gain = int(raw.get("wolf_eat_gain") or 8)
+    wolf_reproduction_threshold = int(raw.get("wolf_reproduction_threshold") or 14)
+    wolf_reproduction_probability = float(raw.get("wolf_reproduction_probability") or 0.04)
+    wolf_predation_capacity = int(raw.get("wolf_predation_capacity") or 1)
+
+    grass_regrow_ticks = int(raw.get("grass_regrow_ticks") or 5)
+
+    min_sheep_threshold = int(raw.get("min_sheep_threshold") or 12)
+    max_wolf_threshold = int(raw.get("max_wolf_threshold") or 25)
+    low_grass_threshold_pct = int(raw.get("low_grass_threshold_pct") or 25)
+
+    max_ticks = int(raw.get("max_ticks") or 1000)
+    extinction_grace_ticks = int(raw.get("extinction_grace_ticks") or 20)
+
     timestep_minutes = int(raw.get("timestep_minutes") or 15)
     arrival_prob = float(raw.get("arrival_prob") or 0.25)
     bag_fill_delta_pct = int(raw.get("bag_fill_delta_pct") or 2)
@@ -328,6 +390,30 @@ def _parse_simulation_config(raw: Any) -> SimulationConfig | None:
         locations.append(SimulationLocationConfig(location_id=location_id, lat=lat, lon=lon))
 
     return SimulationConfig(
+        grid_width=grid_width,
+        grid_height=grid_height,
+        tick_interval_s=tick_interval_s,
+        seed=seed,
+        initial_sheep=initial_sheep,
+        initial_wolves=initial_wolves,
+        initial_grass_coverage_pct=initial_grass_coverage_pct,
+        sheep_initial_energy=sheep_initial_energy,
+        sheep_move_cost=sheep_move_cost,
+        sheep_eat_gain=sheep_eat_gain,
+        sheep_reproduction_threshold=sheep_reproduction_threshold,
+        sheep_reproduction_probability=sheep_reproduction_probability,
+        wolf_initial_energy=wolf_initial_energy,
+        wolf_move_cost=wolf_move_cost,
+        wolf_eat_gain=wolf_eat_gain,
+        wolf_reproduction_threshold=wolf_reproduction_threshold,
+        wolf_reproduction_probability=wolf_reproduction_probability,
+        wolf_predation_capacity=wolf_predation_capacity,
+        grass_regrow_ticks=grass_regrow_ticks,
+        min_sheep_threshold=min_sheep_threshold,
+        max_wolf_threshold=max_wolf_threshold,
+        low_grass_threshold_pct=low_grass_threshold_pct,
+        max_ticks=max_ticks,
+        extinction_grace_ticks=extinction_grace_ticks,
         timestep_minutes=timestep_minutes,
         arrival_prob=arrival_prob,
         bag_fill_delta_pct=bag_fill_delta_pct,
@@ -335,7 +421,6 @@ def _parse_simulation_config(raw: Any) -> SimulationConfig | None:
         publish_every_deposit=publish_every_deposit,
         step_delay_s=step_delay_s,
         start_time=start_time,
-        seed=seed,
         locations=tuple(locations),
     )
 

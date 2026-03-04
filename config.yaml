@@ -67,3 +67,42 @@ mqtt:
 #   # All available brokers by name:
 #   print(config.mqtt_configs["local"].host)
 #   print(config.mqtt_configs["mqtthq"].host)
+
+simulation:
+  # Grid and timing
+  grid_width: 10
+  grid_height: 10
+  tick_interval_s: 0.5
+  seed: 42
+
+  # Initial populations
+  initial_sheep: 30
+  initial_wolves: 8
+  initial_grass_coverage_pct: 70
+
+  # Sheep parameters
+  sheep_initial_energy: 8
+  sheep_move_cost: 1
+  sheep_eat_gain: 4
+  sheep_reproduction_threshold: 10
+  sheep_reproduction_probability: 0.08
+
+  # Wolf parameters
+  wolf_initial_energy: 12
+  wolf_move_cost: 1
+  wolf_eat_gain: 8
+  wolf_reproduction_threshold: 14
+  wolf_reproduction_probability: 0.04
+  wolf_predation_capacity: 1
+
+  # Grass parameters
+  grass_regrow_ticks: 5
+
+  # Control thresholds
+  min_sheep_threshold: 12
+  max_wolf_threshold: 25
+  low_grass_threshold_pct: 25
+
+  # Stop condition
+  max_ticks: 1000
+  extinction_grace_ticks: 20

@@ -125,3 +125,93 @@ def test_load_config_single_broker_with_active_profiles(tmp_path) -> None:
     # Only local broker in configs
     assert "local" in cfg.mqtt_configs
     assert len(cfg.mqtt_configs) == 1
+
+
+def test_load_config_reads_sheep_wolf_simulation_fields(tmp_path) -> None:
+    """Test parsing Phase 2 sheep-wolf simulation config fields."""
+    p = tmp_path / "config.yaml"
+    p.write_text(
+        """
+mqtt:
+  active_profiles: [local]
+  profiles:
+    local:
+      host: localhost
+      port: 1883
+      tls: false
+
+simulation:
+  grid_width: 10
+  grid_height: 10
+  tick_interval_s: 0.5
+  seed: 123
+  initial_sheep: 30
+  initial_wolves: 8
+  initial_grass_coverage_pct: 70
+  sheep_initial_energy: 8
+  sheep_move_cost: 1
+  sheep_eat_gain: 4
+  sheep_reproduction_threshold: 10
+  sheep_reproduction_probability: 0.08
+  wolf_initial_energy: 12
+  wolf_move_cost: 1
+  wolf_eat_gain: 8
+  wolf_reproduction_threshold: 14
+  wolf_reproduction_probability: 0.04
+  wolf_predation_capacity: 1
+  grass_regrow_ticks: 5
+  min_sheep_threshold: 12
+  max_wolf_threshold: 25
+  low_grass_threshold_pct: 25
+  max_ticks: 1000
+  extinction_grace_ticks: 20
+        """.strip(),
+        encoding="utf-8",
+    )
+
+    cfg = load_config(p)
+    assert cfg.simulation is not None
+
+    assert cfg.simulation.grid_width == 10
+    assert cfg.simulation.grid_height == 10
+    assert cfg.simulation.tick_interval_s == 0.5
+    assert cfg.simulation.seed == 123
+    assert cfg.simulation.initial_sheep == 30
+    assert cfg.simulation.initial_wolves == 8
+    assert cfg.simulation.initial_grass_coverage_pct == 70
+    assert cfg.simulation.sheep_reproduction_probability == 0.08
+    assert cfg.simulation.wolf_reproduction_probability == 0.04
+    assert cfg.simulation.grass_regrow_ticks == 5
+    assert cfg.simulation.max_ticks == 1000
+    assert cfg.simulation.extinction_grace_ticks == 20
+
+
+def test_load_config_sheep_wolf_simulation_defaults(tmp_path) -> None:
+    """Test default values for omitted sheep-wolf simulation fields."""
+    p = tmp_path / "config.yaml"
+    p.write_text(
+        """
+mqtt:
+  active_profiles: [local]
+  profiles:
+    local:
+      host: localhost
+      port: 1883
+      tls: false
+
+simulation: {}
+        """.strip(),
+        encoding="utf-8",
+    )
+
+    cfg = load_config(p)
+    assert cfg.simulation is not None
+
+    assert cfg.simulation.grid_width == 10
+    assert cfg.simulation.grid_height == 10
+    assert cfg.simulation.tick_interval_s == 0.5
+    assert cfg.simulation.initial_sheep == 30
+    assert cfg.simulation.initial_wolves == 8
+    assert cfg.simulation.grass_regrow_ticks == 5
+    assert cfg.simulation.max_ticks == 1000
+    assert cfg.simulation.extinction_grace_ticks == 20
