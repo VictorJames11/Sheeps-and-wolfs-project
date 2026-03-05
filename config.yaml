@@ -14,7 +14,7 @@ mqtt:
   # 
 
   # The first profile in the list is the primary (default) broker.
-  active_profiles: [local, hivemq_cloud]
+  active_profiles: [local]
 
   # Broker profiles.
   # Profile values override any common mqtt.* settings below.

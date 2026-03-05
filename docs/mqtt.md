@@ -148,6 +148,19 @@ mosquitto_sub -h broker.example.com -t "simulated_city/weather/rain"
 
 For TLS-secured brokers, add `--cafile` or other TLS options as needed.
 
+## Monitoring Messages in a Notebook
+
+Use `notebooks/mqtt_monitor.ipynb` when you want to watch MQTT traffic inside Jupyter.
+
+What it does:
+
+- Loads broker settings from `config.yaml` via `simulated_city.config.load_config()`
+- Connects with `MqttConnector`
+- Subscribes to `<base_topic>/sim/#`
+- Displays a live table of the latest topic/payload messages
+
+Run all cells in `notebooks/mqtt_monitor.ipynb`, then keep the final loop cell running while other agent notebooks publish.
+
 ## Classes
 
 ### `MqttConnector`
