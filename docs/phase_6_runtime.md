@@ -23,6 +23,7 @@ Phase 6 only: add a separate observer agent notebook and dashboard notebook for 
 - Publishes to:
   - `<base_topic>/sim/observer/metrics`
 - Aggregates per-tick summaries for occupancy, population, energy, grass, and events.
+- Republishes metrics for the current tick when late event messages arrive so births/deaths/predation stay visible in real time.
 
 ### Dashboard observer
 - Loads config via `simulated_city.config.load_config()`.
@@ -120,3 +121,4 @@ Rendered observer metrics message #1
 ## Notes
 - Occupancy is an estimate in this phase (`(sheep + wolves) / total_cells`) because per-cell occupancy messages are not yet published.
 - Dashboard matrix view renders key metrics as a 3x3 heatmap with textual summaries per tick.
+- Sheep counts shown by observer metrics can include wolf predation adjustments published by the sheep agent integration.

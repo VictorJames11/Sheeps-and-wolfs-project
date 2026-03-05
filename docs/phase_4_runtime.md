@@ -6,7 +6,7 @@ Phase 4 only: add a wolf agent notebook that subscribes to sheep/tick topics and
 ## Files created/modified
 - Created: `notebooks/agent_wolf.ipynb`
 - Created: `docs/phase_4_runtime.md`
-- Not modified: Phase 3 sheep publisher notebook (`notebooks/agent_sheep.ipynb`)
+- Updated in later runtime integration: `notebooks/agent_sheep.ipynb` now subscribes to wolf events and applies predation to published sheep counts.
 
 ## What the wolf notebook does
 - Loads config via `simulated_city.config.load_config()`.
@@ -22,7 +22,9 @@ Phase 4 only: add a wolf agent notebook that subscribes to sheep/tick topics and
 ## Runtime behavior
 - On sheep-state messages, caches latest `sheep_count`.
 - On tick messages, computes:
-  - estimated predation (`min(wolf_count * capacity, sheep_count)`)
+  - sheep density estimate (`sheep_count / (grid_width * grid_height)`)
+  - estimated predation (`min(round(wolf_count * capacity * sheep_density), sheep_count)`)
+  - optional minimum encounter of `1` when sheep exist and a random encounter succeeds
   - small stochastic wolf births/deaths using fixed seed offset
 - Publishes one wolf-state payload and one wolf event payload per tick.
 
@@ -47,14 +49,14 @@ MQTT connected: True
 Subscriptions active.
 Wolf agent loop running. Interrupt the cell to stop.
 tick=1 sheep=30 wolves=8 predation=8 births=0 deaths=0 | published
-tick=2 sheep=29 wolves=8 predation=8 births=0 deaths=0 | published
-tick=3 sheep=27 wolves=9 predation=8 births=1 deaths=0 | published
+tick=2 sheep=29 wolves=8 predation=2 births=0 deaths=0 | published
+tick=3 sheep=27 wolves=9 predation=2 births=1 deaths=0 | published
 ```
 
 Expected behavior:
 - One wolf-state publish per tick
 - One wolf event publish per tick
-- `estimated_predation` never exceeds `wolf_count * predation_capacity`
+- `estimated_predation` scales with sheep density and never exceeds `wolf_count * predation_capacity`
 - `estimated_predation` never exceeds latest known sheep count
 
 ## Expected output (example MQTT payloads)
@@ -67,7 +69,7 @@ Expected behavior:
   "seed": 1042,
   "wolf_count": 9,
   "predation_capacity": 1,
-  "estimated_predation": 8,
+  "estimated_predation": 2,
   "timestamp_utc": "2026-03-04T12:00:00+00:00"
 }
 ```
@@ -81,7 +83,7 @@ Expected behavior:
   "source": "wolf",
   "wolf_births": 1,
   "wolf_deaths": 0,
-  "estimated_predation": 8
+  "estimated_predation": 2
 }
 ```
 
@@ -94,4 +96,4 @@ Expected behavior:
 
 ## Notes
 - This phase intentionally keeps distributed timing simple; it uses latest known sheep state when a tick arrives.
-- Handling of delayed/out-of-order messages is deferred to a later phase investigation per the approved plan.
+- Sheep publisher integration applies predation from wolf events to produce a coupled published sheep trajectory while preserving the existing distributed notebook architecture.
